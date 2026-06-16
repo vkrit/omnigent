@@ -78,22 +78,21 @@ _TOOL_CALL_TIMEOUT_S = 1800.0
 
 
 def _resolve_model(model: str | None) -> str:
-    """Resolve the cursor model id, dropping non-cursor ``databricks-*`` ids.
+    """Resolve the cursor model id, dropping ids cursor can't honor.
 
     cursor-sdk accepts only Cursor model ids (``auto``, ``gpt-5``,
-    ``composer-2.5``, ...) and rejects gateway ids, so a ``databricks-*`` model
-    (from a spec authored for another harness) falls back to cursor's auto
-    select. ``None`` likewise resolves to ``auto`` (the SDK requires a model).
+    ``composer-2.5``, ...), so a gateway-routed model id (carried by a spec
+    authored for another harness) falls back to cursor's auto-select. ``None``
+    likewise resolves to ``auto`` (the SDK requires a model).
     """
     if not model or model.startswith(("databricks-", "databricks/")):
         if model:
-            # Warn, not debug: the requested model is silently NOT honored
-            # (cursor has no Databricks gateway), and a debug line is invisible
-            # in the harness subprocess — so a user who pinned a databricks-*
-            # model would otherwise have no idea it was dropped.
+            # Warn, not debug: the requested model is silently NOT honored, and
+            # a debug line is invisible in the harness subprocess — so a user who
+            # pinned a non-Cursor model would otherwise have no idea it was dropped.
             logger.warning(
-                "CursorExecutor: requested model %r is not a Cursor model "
-                "(cursor has no Databricks gateway); falling back to %r auto-select.",
+                "CursorExecutor: requested model %r is not a Cursor model id; "
+                "falling back to %r auto-select.",
                 model,
                 _DEFAULT_CURSOR_MODEL,
             )
@@ -324,7 +323,7 @@ class CursorExecutor(Executor):
             falls back to ``os_env.cwd`` then the process cwd.
         :param os_env: Optional OS environment / sandbox spec (its ``cwd`` is
             used when *cwd* is unset).
-        :param model: Cursor model id (e.g. ``"gpt-5"``); a ``databricks-*`` id
+        :param model: Cursor model id (e.g. ``"gpt-5"``); a gateway-routed id
             or ``None`` falls back to cursor's ``auto`` select.
         :param api_key: Cursor API key. ``None`` falls back to ``CURSOR_API_KEY``
             in the environment.

@@ -178,7 +178,7 @@ def test_resolve_model_warns_when_dropping_a_pinned_model(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Dropping an explicit (non-cursor) model must warn, not whisper at debug —
-    otherwise a user who pinned a databricks-* model has no idea it was ignored."""
+    otherwise a user who pinned a non-Cursor model has no idea it was ignored."""
     import logging
 
     with caplog.at_level(logging.WARNING, logger="omnigent.inner.cursor_executor"):
