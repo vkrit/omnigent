@@ -48,7 +48,7 @@ on:
   pull_request:
     types: [labeled]
   workflow_run:
-    workflows: [PR Template, CI, Lint, E2E UI Tests, E2E Tests]
+    workflows: [PR Template, CI, Lint, E2E UI Tests, E2E Tests, Integration Tests]
     types: [completed]
   issue_comment:
     types: [created]
